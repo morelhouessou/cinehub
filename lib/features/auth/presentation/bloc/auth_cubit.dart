@@ -25,7 +25,7 @@ class AuthCubit extends Cubit<AuthState> {
       await repository.login(email, password);
       emit(const AuthState(AuthStatus.authenticated));
     } catch (e) {
-      emit(AuthState(AuthStatus.error, message: e.toString()));
+      emit(AuthState(AuthStatus.error, message: _messageFor(e)));
     }
   }
 
@@ -35,12 +35,17 @@ class AuthCubit extends Cubit<AuthState> {
       await repository.register(email, password);
       emit(const AuthState(AuthStatus.authenticated));
     } catch (e) {
-      emit(AuthState(AuthStatus.error, message: e.toString()));
+      emit(AuthState(AuthStatus.error, message: _messageFor(e)));
     }
   }
 
   Future<void> logout() async {
     await repository.logout();
     emit(const AuthState(AuthStatus.unauthenticated));
+  }
+
+  String _messageFor(Object error) {
+    final message = error.toString().replaceFirst('Exception: ', '');
+    return message.isEmpty ? 'Erreur d’authentification.' : message;
   }
 }

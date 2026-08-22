@@ -31,11 +31,18 @@ class HomePage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (state.error != null)
-                  Card(child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text('Mode hors-ligne : données en cache affichées.'),
-                  )),
+                if (state.error != null &&
+                    (state.popular.isNotEmpty ||
+                        state.topRated.isNotEmpty ||
+                        state.nowPlaying.isNotEmpty))
+                  const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Text(
+                        'Mode hors-ligne : données en cache affichées.',
+                      ),
+                    ),
+                  ),
                 _section(context, 'Films populaires', state.popular),
                 _section(context, 'Mieux notés', state.topRated),
                 _section(context, 'À l’affiche', state.nowPlaying),

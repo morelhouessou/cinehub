@@ -7,8 +7,14 @@ class MovieRemoteDataSource {
 
   Future<List<MovieModel>> _get(String path) async {
     final response = await dio.get(path);
-    final results = (response.data['results'] as List).cast<Map<String, dynamic>>();
-    return results.map(MovieModel.fromJson).toList();
+    final data = response.data;
+    if (data is! Map || data['results'] is! List) {
+      throw const FormatException('Réponse TMDB invalide.');
+    }
+    return (data['results'] as List)
+        .whereType<Map>()
+        .map((item) => MovieModel.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   Future<List<MovieModel>> getPopular() => _get('/movie/popular');
