@@ -11,6 +11,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  bool get isConfigured => _client != null;
+
+  @override
   Future<void> login(String email, String password) async {
     final client = _client;
     if (client == null) {

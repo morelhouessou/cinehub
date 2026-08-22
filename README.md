@@ -26,7 +26,9 @@ flutter pub get
 flutter run --dart-define=TMDB_API_KEY=VOTRE_CLE_TMDB --dart-define=SUPABASE_URL=VOTRE_URL --dart-define=SUPABASE_ANON_KEY=VOTRE_CLE
 ```
 
-Sans Supabase configuré, le module de films reste utilisable. Pour la certification, configurez Supabase afin de démontrer login/register/logout.
+Sans Supabase configuré, l'application démarre en mode démo et le module de films reste utilisable. Lorsque Supabase est configuré, l'accès aux films est protégé par l'authentification.
+
+Supabase renouvelle automatiquement la session JWT lorsqu'elle arrive à expiration. L'intercepteur Dio réutilise le jeton courant pour les appels authentifiés.
 
 ## Fonctionnalités
 
@@ -62,6 +64,15 @@ core/
 ```
 
 Le repository orchestre les sources distante et locale. La couche domain ne dépend ni de Dio ni de Hive.
+
+```mermaid
+flowchart LR
+  UI[Pages Flutter] --> C[Cubit]
+  C --> R[Repository domain]
+  R --> Remote[TMDB via Dio]
+  R --> Local[Hive cache]
+  C --> Auth[Supabase Auth]
+```
 
 ## Tests
 

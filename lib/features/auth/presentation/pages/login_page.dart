@@ -12,6 +12,13 @@ class _LoginPageState extends State<LoginPage> {
   final password = TextEditingController();
 
   @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Connexion')),
@@ -28,8 +35,16 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context, state) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(controller: email, decoration: const InputDecoration(labelText: 'Email')),
-              TextField(controller: password, obscureText: true, decoration: const InputDecoration(labelText: 'Mot de passe')),
+              TextField(
+                controller: email,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
+              TextField(
+                controller: password,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Mot de passe'),
+              ),
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: state.status == AuthStatus.loading
@@ -38,7 +53,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: const Text('Se connecter'),
               ),
               TextButton(
-                onPressed: () => context.read<AuthCubit>().register(email.text, password.text),
+                onPressed: state.status == AuthStatus.loading
+                    ? null
+                    : () => context.read<AuthCubit>().register(
+                          email.text,
+                          password.text,
+                        ),
                 child: const Text('Créer un compte'),
               ),
             ],

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/auth/presentation/bloc/auth_cubit.dart';
+import 'features/auth/presentation/pages/login_page.dart';
 import 'features/movies/presentation/pages/home_page.dart';
 
 class CineHubApp extends StatelessWidget {
@@ -23,7 +26,18 @@ class AppGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Auth is optional for demo/offline mode when Supabase is not configured.
-    return const HomePage();
+    if (!context.read<AuthCubit>().isConfigured) return const HomePage();
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state.status == AuthStatus.initial ||
+            state.status == AuthStatus.loading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (state.status == AuthStatus.authenticated) return const HomePage();
+        return const LoginPage();
+      },
+    );
   }
 }

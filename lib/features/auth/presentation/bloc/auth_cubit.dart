@@ -13,6 +13,8 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository repository;
   AuthCubit(this.repository) : super(const AuthState(AuthStatus.initial));
 
+  bool get isConfigured => repository.isConfigured;
+
   void checkSession() => emit(AuthState(
     repository.isAuthenticated ? AuthStatus.authenticated : AuthStatus.unauthenticated,
   ));

@@ -28,7 +28,7 @@ class MovieCubit extends Cubit<MovieState> {
       ]);
       emit(MovieState(popular: results[0], topRated: results[1], nowPlaying: results[2]));
     } catch (e) {
-      emit(MovieState(error: 'Impossible de charger les films. Vérifiez votre connexion.'));
+      emit(MovieState(error: e.toString()));
     }
   }
 }

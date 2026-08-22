@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:cinehub/features/movies/data/datasources/movie_local_data_source.dart';
 import 'package:cinehub/features/movies/data/datasources/movie_remote_data_source.dart';
 import 'package:cinehub/features/movies/data/models/movie_model.dart';
 import 'package:cinehub/features/movies/data/repositories/movie_repository_impl.dart';
+import 'package:cinehub/core/error/failures.dart';
 
 class MockRemote extends Mock implements MovieRemoteDataSource {}
 class MockLocal extends Mock implements MovieLocalDataSource {}
@@ -45,5 +47,26 @@ void main() {
     when(() => remote.getPopular()).thenThrow(Exception('offline'));
     when(() => local.get('popular_movies')).thenReturn([]);
     expect(() => repository.getPopular(), throwsException);
+  });
+
+  test('returns a useful error when network fails without cache', () async {
+    when(() => remote.getPopular()).thenThrow(
+      DioException(
+        requestOptions: RequestOptions(path: '/movie/popular'),
+        type: DioExceptionType.connectionError,
+      ),
+    );
+    when(() => local.get('popular_movies')).thenReturn([]);
+
+    expect(
+      () => repository.getPopular(),
+      throwsA(
+        isA<MovieFailure>().having(
+          (failure) => failure.message,
+          'message',
+          contains('Connexion impossible'),
+        ),
+      ),
+    );
   });
 }
